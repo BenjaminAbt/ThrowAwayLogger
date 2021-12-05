@@ -1,0 +1,57 @@
+name: NET
+
+on:
+    push:
+      branches:
+        - main
+    pull_request:
+      branches:
+        - main
+
+env:
+  DOTNET_SKIP_FIRST_TIME_EXPERIENCE: true
+  BuildConfig: Release
+  DOTNET_SDK: '6.0.100' # https://dotnetcli.blob.core.windows.net/dotnet/release-metadata/6.0/releases.json
+
+jobs:
+    build:
+      runs-on: ubuntu-latest
+      steps:
+      
+      - name: Cancel previous builds in PR
+        uses: styfle/cancel-workflow-action@0.9.0
+        with:
+          access_token: ${{ github.token }}
+          
+      - uses: actions/checkout@v2
+        with:
+          fetch-depth: 0 # avoid shallow clone so nbgv can do its work.
+
+      - uses: actions/setup-dotnet@v1
+        with:
+          dotnet-version: ${{ env.DOTNET_SDK }}
+
+      - uses: dotnet/nbgv@master # https://github.com/dotnet/nbgv
+        id: nbgv
+
+      - name: Versioning
+        run: echo ${{ steps.nbgv.outputs.SemVer2 }}
+
+      - name: Build with dotnet
+        run: dotnet build
+              --configuration ${{ env.BuildConfig }}
+              /p:Version=${{ steps.nbgv.outputs.AssemblyVersion }}
+
+      - name: Test with dotnet
+        run: dotnet test
+
+      - name: Pack NuGet
+        run: dotnet pack
+              --configuration ${{ env.BuildConfig }}
+              /p:Version=${{ steps.nbgv.outputs.NuGetPackageVersion }}
+      
+      - name: Push to NuGet
+        run: dotnet nuget push **/*.nupkg
+                --api-key ${{ secrets.NUGET_DEPLOY_KEY }}
+                --source https://api.nuget.org/v3/index.json
+                --no-symbols 1
