@@ -1,6 +1,6 @@
 # ThrowAwayLogger
 
-`ThrowAwayLogger` is an implementation of [ILogger](https://docs.microsoft.com/dotnet/core/extensions/custom-logging-provider?WT.mc_id=DT-MVP-5001507) as well as [ILogger<T>](https://docs.microsoft.com/dotnet/core/extensions/custom-logging-provider?WT.mc_id=DT-MVP-5001507) which does nothing. Really: nothing.
+`ThrowAwayLogger` is an implementation of [`ILogger`](https://docs.microsoft.com/dotnet/core/extensions/custom-logging-provider?WT.mc_id=DT-MVP-5001507) as well as [`ILogger<T>`](https://docs.microsoft.com/dotnet/core/extensions/custom-logging-provider?WT.mc_id=DT-MVP-5001507) which does nothing. Really: nothing.
 
 Very handy for benchmarks or simple testing.
 
@@ -11,7 +11,10 @@ Very handy for benchmarks or simple testing.
 ## Sample
 
 ```csharp
+// field
 private ILogger _log = new ThrowAwayLogger();
+
+// call
 _log.Log(LogLevel.Information, _ex, "Test " + _message);
 ```
 
