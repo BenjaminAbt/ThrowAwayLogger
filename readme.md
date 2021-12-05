@@ -11,7 +11,7 @@ Very handy for benchmarks or simple testing.
 ## Sample
 
 ```csharp
-private ILogger _log = new NobodyCaresLogger();
+private ILogger _log = new ThrowAwayLogger();
 _log.Log(LogLevel.Information, _ex, "Test " + _message);
 ```
 
